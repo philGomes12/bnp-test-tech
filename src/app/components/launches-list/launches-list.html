@@ -1,41 +1,57 @@
 <div class="container-launches">
   <h1 class="mat-headline-medium title">SpaceX Launch Explorer</h1>
 
-
   <mat-form-field appearance="outline" class="search-field">
     <mat-label>Search for a mission...</mat-label>
-    <input 
+
+    <input
       matInput
-      type="text" 
-      [(ngModel)]="searchTerm" 
-      (ngModelChange)="onSearchChange()" 
+      type="text"
+      [(ngModel)]="searchTerm"
       placeholder="Ex. Crew-1"
     />
+
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
+  @if (loading$ | async) {
+  <p>Loading launches...</p>
+  } @if (launches$ | async; as launches) {
   <div class="launches-grid">
-    <mat-card *ngFor="let launch of filteredLaunches" class="launch-card">
+    @for (launch of launches; track launch.id) {
+    <mat-card class="launch-card">
       <mat-card-header>
-        <img mat-card-avatar [src]="launch.links?.mission_patch_small" alt="Mission's patch">
-        <mat-card-title>{{ launch.mission_name }}</mat-card-title>
-        <mat-card-subtitle>Flight n°{{ launch.flight_number }}</mat-card-subtitle>
+        @if (launch.patchUrl) {
+        <img mat-card-avatar [src]="launch.patchUrl" [alt]="launch.name" />
+        }
+
+        <mat-card-title> {{ launch.name }} </mat-card-title>
+
+        <mat-card-subtitle>
+          Flight n°{{ launch.flightNumber }}
+        </mat-card-subtitle>
       </mat-card-header>
 
       <mat-card-content class="card-content">
         <p class="date-text">
           <mat-icon>calendar_today</mat-icon>
-          {{ launch.launch_date_local | date:'dd/MM/yyyy' }}
+          {{ launch.dateLocal | date: 'dd/MM/yyyy' }}
         </p>
       </mat-card-content>
 
       <mat-card-actions class="card-actions">
         <mat-chip-set>
-          <mat-chip [class.status-success]="launch.success" [class.status-error]="!launch.success">
-            {{ launch.success ? 'Success' : 'Failure' }}
+          <mat-chip
+            [class.status-success]="launch.success === true"
+            [class.status-error]="launch.success === false"
+          >
+            @if (launch.success === true) { Success } @else if (launch.success
+            === false) { Failure } @else { Unknown }
           </mat-chip>
         </mat-chip-set>
       </mat-card-actions>
     </mat-card>
+    }
   </div>
+  }
 </div>
