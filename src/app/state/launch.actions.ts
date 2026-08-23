@@ -28,3 +28,15 @@ export const loadLaunchDetailsFailure = createAction(
   '[Launch API] Load Launch Details Failure',
   props<{ error: string }>(),
 );
+
+export const toggleFavorite = createAction(
+  '[Launch] Toggle Favorite',
+  props<{ id: string }>(),
+);
+
+export const loadFavorites = createAction('[Favorites] Load Favorites');
+
+export const loadFavoritesSuccess = createAction(
+  '[Favorites] Load Favorites Success',
+  props<{ favoriteIds: string[] }>(),
+);

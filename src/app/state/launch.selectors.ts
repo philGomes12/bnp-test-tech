@@ -28,3 +28,6 @@ export const selectFavoriteIds = createSelector(
   selectLaunchState,
   (state) => state.favoriteIds,
 );
+
+export const selectIsFavorite = (id: string) =>
+  createSelector(selectFavoriteIds, (favoriteIds) => favoriteIds.includes(id));

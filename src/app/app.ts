@@ -1,12 +1,19 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Store } from '@ngrx/store';
+
+import * as LaunchActions from './state/launch.actions';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App {
-  protected readonly title = signal('spaceX_kata');
+export class App implements OnInit {
+  private readonly store = inject(Store);
+
+  ngOnInit(): void {
+    this.store.dispatch(LaunchActions.loadFavorites());
+  }
 }

@@ -17,7 +17,8 @@
 
   @if (loading$ | async) {
   <p>Loading launches...</p>
-  } @if (filteredLaunches$ | async; as launches) {
+  } @if (filteredLaunches$ | async; as launches) { @if (favoriteIds | async; as
+  favoriteIds) {
   <div class="launches-grid">
     @for (launch of launches; track launch.id) {
     <mat-card class="launch-card">
@@ -51,6 +52,22 @@
           </mat-chip>
         </mat-chip-set>
 
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="
+                  favoriteIds.includes(launch.id)
+                    ? 'Remove from favorites'
+                    : 'Add to favorites'
+                "
+          (click)="toggleFavorite(launch.id)"
+        >
+          <mat-icon>
+            {{ favoriteIds.includes(launch.id) ? 'favorite' : 'favorite_border'
+            }}
+          </mat-icon>
+        </button>
+
         <a mat-button [routerLink]="['/launch', launch.id]">
           View details
           <mat-icon>arrow_forward</mat-icon>
@@ -59,5 +76,5 @@
     </mat-card>
     }
   </div>
-  }
+  } }
 </div>

@@ -1,14 +1,27 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, exhaustMap, map, of, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import {
+  catchError,
+  exhaustMap,
+  map,
+  of,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 
 import { SpacexService } from '../services/spacex';
 import * as LaunchActions from './launch.actions';
+import { selectFavoriteIds } from './launch.selectors';
 
 @Injectable()
 export class LaunchEffects {
   private readonly actions$ = inject(Actions);
   private readonly spacexService = inject(SpacexService);
+  private readonly store = inject(Store);
+
+  private readonly favoritesStorageKey = 'spacex-favorite-launches';
 
   readonly loadLaunches$ = createEffect(() =>
     this.actions$.pipe(
@@ -54,6 +67,59 @@ export class LaunchEffects {
         ),
       ),
     ),
+  );
+
+  readonly loadFavorites$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(LaunchActions.loadFavorites),
+      map(() => {
+        const storedFavorites = localStorage.getItem(this.favoritesStorageKey);
+
+        if (!storedFavorites) {
+          return LaunchActions.loadFavoritesSuccess({
+            favoriteIds: [],
+          });
+        }
+
+        try {
+          const parsedFavorites: unknown = JSON.parse(storedFavorites);
+
+          if (
+            Array.isArray(parsedFavorites) &&
+            parsedFavorites.every(
+              (favoriteId) => typeof favoriteId === 'string',
+            )
+          ) {
+            return LaunchActions.loadFavoritesSuccess({
+              favoriteIds: parsedFavorites,
+            });
+          }
+
+          return LaunchActions.loadFavoritesSuccess({
+            favoriteIds: [],
+          });
+        } catch {
+          return LaunchActions.loadFavoritesSuccess({
+            favoriteIds: [],
+          });
+        }
+      }),
+    ),
+  );
+
+  readonly persistFavorites$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(LaunchActions.toggleFavorite),
+        withLatestFrom(this.store.select(selectFavoriteIds)),
+        tap(([, favoriteIds]) => {
+          localStorage.setItem(
+            this.favoritesStorageKey,
+            JSON.stringify(favoriteIds),
+          );
+        }),
+      ),
+    { dispatch: false },
   );
 
   private getErrorMessage(error: unknown): string {

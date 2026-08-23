@@ -4,7 +4,11 @@
     Back to launches
   </a>
 
-  @if (launch$ | async; as launch) {
+  @if (loading$ | async) {
+  <p>Loading launch...</p>
+  } @else if (error$ | async; as error) {
+  <p>{{ error }}</p>
+  } @else if (launch$ | async; as launch) {
   <mat-card class="details-card">
     <mat-card-header>
       @if (launch.patchUrl) {
@@ -42,8 +46,20 @@
       </p>
       }
     </mat-card-content>
+
+    <mat-card-actions>
+      @if (isFavorite$ | async) {
+      <button mat-button type="button" (click)="toggleFavorite()">
+        <mat-icon>favorite</mat-icon>
+        Remove from favorites
+      </button>
+      } @else {
+      <button mat-button type="button" (click)="toggleFavorite()">
+        <mat-icon>favorite_border</mat-icon>
+        Add to favorites
+      </button>
+      }
+    </mat-card-actions>
   </mat-card>
-  } @else {
-  <p>Launch not found.</p>
   }
 </div>

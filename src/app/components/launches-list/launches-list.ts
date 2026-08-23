@@ -14,6 +14,7 @@ import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import * as LaunchActions from '../../state/launch.actions';
 import {
   selectAllLaunches,
+  selectFavoriteIds,
   selectIsLoading,
 } from '../../state/launch.selectors';
 
@@ -39,6 +40,7 @@ export class LaunchesListComponent implements OnInit {
   private readonly searchTermSubject = new BehaviorSubject<string>('');
 
   private readonly launches$ = this.store.select(selectAllLaunches);
+  private readonly favoriteIds$ = this.store.select(selectFavoriteIds);
 
   readonly loading$ = this.store.select(selectIsLoading);
 
@@ -59,6 +61,8 @@ export class LaunchesListComponent implements OnInit {
     }),
   );
 
+  readonly favoriteIds = this.favoriteIds$;
+
   searchTerm = '';
 
   ngOnInit(): void {
@@ -67,5 +71,9 @@ export class LaunchesListComponent implements OnInit {
 
   onSearchChange(searchTerm: string): void {
     this.searchTermSubject.next(searchTerm);
+  }
+
+  toggleFavorite(id: string): void {
+    this.store.dispatch(LaunchActions.toggleFavorite({ id }));
   }
 }
