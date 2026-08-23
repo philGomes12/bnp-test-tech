@@ -9,6 +9,11 @@ export const selectAllLaunches = createSelector(
   (state) => state.launches,
 );
 
+export const selectSelectedLaunch = createSelector(
+  selectLaunchState,
+  (state) => state.selectedLaunch,
+);
+
 export const selectIsLoading = createSelector(
   selectLaunchState,
   (state) => state.loading,

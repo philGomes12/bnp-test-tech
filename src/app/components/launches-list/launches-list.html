@@ -8,6 +8,7 @@
       matInput
       type="text"
       [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange($event)"
       placeholder="Ex. Crew-1"
     />
 
@@ -16,7 +17,7 @@
 
   @if (loading$ | async) {
   <p>Loading launches...</p>
-  } @if (launches$ | async; as launches) {
+  } @if (filteredLaunches$ | async; as launches) {
   <div class="launches-grid">
     @for (launch of launches; track launch.id) {
     <mat-card class="launch-card">
@@ -49,6 +50,11 @@
             === false) { Failure } @else { Unknown }
           </mat-chip>
         </mat-chip-set>
+
+        <a mat-button [routerLink]="['/launch', launch.id]">
+          View details
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
       </mat-card-actions>
     </mat-card>
     }

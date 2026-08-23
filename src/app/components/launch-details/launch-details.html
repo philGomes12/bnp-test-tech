@@ -1,0 +1,49 @@
+<div class="details-container">
+  <a mat-button routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+    Back to launches
+  </a>
+
+  @if (launch$ | async; as launch) {
+  <mat-card class="details-card">
+    <mat-card-header>
+      @if (launch.patchUrl) {
+      <img mat-card-avatar [src]="launch.patchUrl" [alt]="launch.name" />
+      }
+
+      <mat-card-title> {{ launch.name }} </mat-card-title>
+
+      <mat-card-subtitle>
+        Flight n°{{ launch.flightNumber }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (launch.patchUrl) {
+      <img class="mission-patch" [src]="launch.patchUrl" [alt]="launch.name" />
+      }
+
+      <p>
+        <strong>Date:</strong>
+        {{ launch.dateLocal | date: 'medium' }}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+
+        @if (launch.success === true) { Success } @else if (launch.success ===
+        false) { Failure } @else { Unknown }
+      </p>
+
+      @if (launch.details) {
+      <p>
+        <strong>Details:</strong>
+        {{ launch.details }}
+      </p>
+      }
+    </mat-card-content>
+  </mat-card>
+  } @else {
+  <p>Launch not found.</p>
+  }
+</div>
