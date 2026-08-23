@@ -52,12 +52,6 @@ http://localhost:4200
 Generate an optimized production build:
 
 ```bash
-npm run build
-```
-
-Or explicitly:
-
-```bash
 npm run build:production
 ```
 
