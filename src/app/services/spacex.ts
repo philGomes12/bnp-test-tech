@@ -1,23 +1,39 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, Observable } from 'rxjs';
+
+import { Launch, SpaceXLaunchDto } from '../models/launch.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpacexService {
-  private localUrl = 'launches.json';
+  private readonly http = inject(HttpClient);
+  private readonly localUrl = 'launches.json';
 
-  constructor(private http: HttpClient) {}
-
-  getPastLaunches(): Observable<any[]> {
-    return this.http.get<any[]>(this.localUrl);
+  getPastLaunches(): Observable<Launch[]> {
+    return this.http
+      .get<SpaceXLaunchDto[]>(this.localUrl)
+      .pipe(
+        map((launches) => launches.map((launch) => this.mapLaunch(launch))),
+      );
   }
 
-  getLaunchById(id: string): Observable<any> {
-    return this.http.get<any[]>(this.localUrl).pipe(
-      map(launches => launches.find(l => l.id === id))
+  getLaunchById(id: string): Observable<Launch | undefined> {
+    return this.getPastLaunches().pipe(
+      map((launches) => launches.find((launch) => launch.id === id)),
     );
+  }
+
+  private mapLaunch(launch: SpaceXLaunchDto): Launch {
+    return {
+      id: launch.flight_number.toString(),
+      flightNumber: launch.flight_number,
+      name: launch.mission_name,
+      dateLocal: launch.launch_date_local,
+      success: launch.launch_success,
+      details: launch.details,
+      patchUrl: launch.links.mission_patch_small,
+    };
   }
 }
